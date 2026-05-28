@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { placeBid } from '../lib/soroban';
-import { xlmToStroops, stroopsToXlm } from '../config';
+import { useState, useEffect } from 'react';
+import { placeBid, getTokenBalance } from '../lib/soroban';
+import { xlmToStroops, stroopsToXlm, NATIVE_TOKEN } from '../config';
 import type { AuctionState } from '../types';
 
 interface Props {
@@ -33,16 +33,22 @@ export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
   const [amount, setAmount] = useState('');
   const [status, setStatus] = useState<Status>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [balance, setBalance] = useState<bigint | null>(null);
 
   const minDisplay = stroopsToXlm(auction.min_bid);
   const currentDisplay =
     auction.highest_bid === 0n ? null : stroopsToXlm(auction.highest_bid);
   const floorDisplay = currentDisplay ?? minDisplay;
+  const isNative = auction.token === NATIVE_TOKEN;
+  const isNotFunded = errorMsg.includes('not funded');
 
   const isSeller =
     walletAddress.toLowerCase() === auction.seller.toLowerCase();
 
-  const isNotFunded = errorMsg.includes('not funded');
+  useEffect(() => {
+    if (isSeller) return;
+    getTokenBalance(auction.token, walletAddress).then(setBalance);
+  }, [auction.token, walletAddress, isSeller]);
 
   async function handleFund() {
     setStatus('funding');
@@ -50,6 +56,9 @@ export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
     try {
       await friendbotFund(walletAddress);
       setStatus('funded');
+      // Refresh balance after funding
+      const newBalance = await getTokenBalance(auction.token, walletAddress);
+      setBalance(newBalance);
     } catch (e) {
       setErrorMsg(extractMsg(e));
       setStatus('error');
@@ -78,6 +87,8 @@ export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
       await placeBid(walletAddress, stroops);
       setStatus('success');
       setAmount('');
+      // Refresh balance after successful bid
+      getTokenBalance(auction.token, walletAddress).then(setBalance);
       setTimeout(() => {
         setStatus('idle');
         onSuccess();
@@ -100,7 +111,17 @@ export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
 
   return (
     <div className="card">
-      <h3 className="text-base font-semibold text-gray-900 mb-1">Place a Bid</h3>
+      <div className="flex items-start justify-between mb-1">
+        <h3 className="text-base font-semibold text-gray-900">Place a Bid</h3>
+        {balance !== null && (
+          <span className="text-xs text-gray-500 font-mono">
+            Balance:{' '}
+            <span className="text-gray-900 font-medium">
+              {stroopsToXlm(balance)} {isNative ? 'XLM' : 'tokens'}
+            </span>
+          </span>
+        )}
+      </div>
       <p className="text-xs text-gray-500 mb-5">
         If you are outbid, your XLM is returned to your wallet automatically.
       </p>
@@ -133,11 +154,27 @@ export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
               XLM
             </span>
           </div>
-          {currentDisplay && (
-            <p className="mt-1.5 text-xs text-gray-400">
-              Current highest: {currentDisplay} XLM, your bid must exceed this.
-            </p>
-          )}
+          <div className="flex items-center justify-between mt-1.5">
+            {currentDisplay ? (
+              <p className="text-xs text-gray-400">
+                Current highest: {currentDisplay} XLM. Your bid must exceed this.
+              </p>
+            ) : (
+              <p className="text-xs text-gray-400">
+                Minimum bid: {minDisplay} XLM
+              </p>
+            )}
+            {balance !== null && (
+              <button
+                type="button"
+                className="text-xs text-gray-500 underline underline-offset-2 hover:text-gray-800 transition-colors"
+                onClick={() => setAmount(stroopsToXlm(balance))}
+                disabled={status === 'submitting' || status === 'success'}
+              >
+                Max
+              </button>
+            )}
+          </div>
         </div>
 
         <button
@@ -196,8 +233,7 @@ export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
         {status === 'funded' && (
           <div className="border border-gray-200 bg-gray-50 p-3">
             <p className="text-xs text-gray-700">
-              Account funded. You now have test XLM. Enter an amount above and
-              place your bid.
+              Account funded. Enter an amount above and place your bid.
             </p>
           </div>
         )}
