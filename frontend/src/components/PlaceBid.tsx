@@ -103,9 +103,139 @@ export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
     return (
       <div className="card">
         <p className="text-sm text-white/40 italic">
-          You are the seller — you cannot bid on your own auction.
+          You are the seller, you cannot bid on your own auction.
         </p>
       </div>
     );
   }
+
+  return (
+    <div className="card">
+      <div className="flex items-start justify-between mb-1">
+        <h3 className="text-base font-semibold text-sui-white">Place a Bid</h3>
+        {balance !== null && (
+          <span className="text-xs text-white/40 font-mono">
+            Balance:{' '}
+            <span className="text-sui-gold font-medium">
+              {stroopsToXlm(balance)} {isNative ? 'XLM' : 'tokens'}
+            </span>
+          </span>
+        )}
+      </div>
+      <p className="text-xs text-white/40 mb-5">
+        If you are outbid, your XLM is returned to your wallet automatically.
+      </p>
+
+      <form onSubmit={submit} className="space-y-4">
+        <div>
+          <label className="field-label" htmlFor="bid-amount">
+            Amount (XLM)
+          </label>
+          <div className="relative">
+            <input
+              id="bid-amount"
+              type="number"
+              min="0"
+              step="0.0000001"
+              value={amount}
+              onChange={(e) => {
+                setAmount(e.target.value);
+                if (status === 'error' || status === 'funded') setStatus('idle');
+              }}
+              placeholder={`Min ${floorDisplay} XLM`}
+              className="field-input pr-12"
+              disabled={
+                status === 'submitting' ||
+                status === 'success' ||
+                status === 'funding'
+              }
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/30 font-mono pointer-events-none">
+              XLM
+            </span>
+          </div>
+          <div className="flex items-center justify-between mt-1.5">
+            {currentDisplay ? (
+              <p className="text-xs text-white/40">
+                Current highest: {currentDisplay} XLM. Your bid must exceed this.
+              </p>
+            ) : (
+              <p className="text-xs text-white/40">Minimum bid: {minDisplay} XLM</p>
+            )}
+            {balance !== null && (
+              <button
+                type="button"
+                className="text-xs text-sui-gold hover:text-yellow-300 transition-colors font-medium"
+                onClick={() => setAmount(stroopsToXlm(balance))}
+                disabled={status === 'submitting' || status === 'success'}
+              >
+                Max
+              </button>
+            )}
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          className="btn-primary w-full"
+          disabled={
+            !amount ||
+            status === 'submitting' ||
+            status === 'success' ||
+            status === 'funding'
+          }
+        >
+          {status === 'submitting' ? (
+            <>
+              <span className="w-3.5 h-3.5 border-2 border-sui-black border-t-transparent rounded-full animate-spin" />
+              Submitting...
+            </>
+          ) : status === 'success' ? (
+            'Bid Placed'
+          ) : (
+            'Place Bid'
+          )}
+        </button>
+
+        {/* Not-funded state: show one-click Friendbot button */}
+        {status === 'error' && isNotFunded && (
+          <div className="border border-white/10 bg-white/5 p-4 space-y-3">
+            <p className="text-xs text-white/60 leading-relaxed">
+              Your testnet account is not funded. Click below to receive test XLM from
+              Friendbot, then place your bid.
+            </p>
+            <button type="button" onClick={handleFund} className="btn-secondary w-full">
+              Fund Account with Friendbot
+            </button>
+          </div>
+        )}
+
+        {/* Generic error */}
+        {status === 'error' && !isNotFunded && (
+          <p className="text-xs text-sui-red leading-relaxed">{errorMsg}</p>
+        )}
+
+        {/* Funding in progress */}
+        {status === 'funding' && (
+          <div className="flex items-center gap-2 text-xs text-white/50">
+            <span className="w-3 h-3 border-2 border-sui-gold border-t-transparent rounded-full animate-spin" />
+            Requesting test XLM from Friendbot...
+          </div>
+        )}
+
+        {/* Funded successfully */}
+        {status === 'funded' && (
+          <div className="border border-sui-teal/30 bg-sui-teal/5 p-3">
+            <p className="text-xs text-sui-teal">
+              Account funded. Enter an amount above and place your bid.
+            </p>
+          </div>
+        )}
+
+        {status === 'success' && (
+          <p className="text-xs text-sui-teal">Bid confirmed. Refreshing auction state...</p>
+        )}
+      </form>
+    </div>
+  );
 }
