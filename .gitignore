@@ -16,3 +16,5 @@ target
 
 # Build output
 **/dist
+
+**/frontend/.vite/
