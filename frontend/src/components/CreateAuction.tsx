@@ -52,19 +52,22 @@ export default function CreateAuction({ walletAddress, onSuccess }: Props) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-sui-black px-4">
       <div className="w-full max-w-md">
         <div className="mb-8">
-          <p className="text-xs font-medium tracking-[0.3em] text-gray-400 uppercase mb-2">
-            No auction found
-          </p>
-          <h2 className="text-2xl font-semibold text-gray-900">Create Auction</h2>
-          <p className="mt-1 text-sm text-gray-500">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="w-2 h-2 bg-sui-gold inline-block" />
+            <p className="text-xs font-mono tracking-[0.25em] text-white/40 uppercase">
+              No auction found
+            </p>
+          </div>
+          <h2 className="text-2xl font-semibold text-sui-white">Create Auction</h2>
+          <p className="mt-1 text-sm text-white/50">
             Set up a new no-loss auction on this contract.
           </p>
         </div>
 
-        <div className="border border-gray-200 p-6">
+        <div className="border border-white/10 bg-sui-off-black p-6">
           <form onSubmit={submit} className="space-y-5">
             <div>
               <label className="field-label" htmlFor="token">
@@ -79,7 +82,7 @@ export default function CreateAuction({ walletAddress, onSuccess }: Props) {
                 placeholder="C..."
                 disabled={status === 'submitting' || status === 'success'}
               />
-              <p className="mt-1 text-xs text-gray-400">
+              <p className="mt-1 text-xs text-white/30">
                 Pre-filled with the native XLM token on testnet.
               </p>
             </div>
@@ -99,7 +102,7 @@ export default function CreateAuction({ walletAddress, onSuccess }: Props) {
                   className="field-input pr-12"
                   disabled={status === 'submitting' || status === 'success'}
                 />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-mono pointer-events-none">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/30 font-mono pointer-events-none">
                   XLM
                 </span>
               </div>
@@ -129,7 +132,7 @@ export default function CreateAuction({ walletAddress, onSuccess }: Props) {
               >
                 {status === 'submitting' ? (
                   <>
-                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span className="w-3.5 h-3.5 border-2 border-sui-black border-t-transparent rounded-full animate-spin" />
                     Creating...
                   </>
                 ) : status === 'success' ? (
@@ -141,19 +144,19 @@ export default function CreateAuction({ walletAddress, onSuccess }: Props) {
             </div>
 
             {status === 'error' && (
-              <p className="text-xs text-red-600 leading-relaxed">{errorMsg}</p>
+              <p className="text-xs text-sui-red leading-relaxed">{errorMsg}</p>
             )}
             {status === 'success' && (
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-sui-teal">
                 Auction created. Loading auction state...
               </p>
             )}
           </form>
         </div>
 
-        <p className="mt-4 text-xs text-gray-400">
+        <p className="mt-4 text-xs text-white/30">
           Connected as{' '}
-          <span className="font-mono">
+          <span className="font-mono text-white/50">
             {walletAddress.slice(0, 6)}...{walletAddress.slice(-6)}
           </span>
         </p>
