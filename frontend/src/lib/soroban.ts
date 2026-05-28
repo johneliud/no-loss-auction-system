@@ -171,3 +171,20 @@ export async function finalize(callerAddress: string) {
 export async function cancelAuction(callerAddress: string) {
   return submitTx(callerAddress, contract.call('cancel'));
 }
+
+export async function getTokenBalance(
+  tokenAddress: string,
+  userAddress: string
+): Promise<bigint> {
+  try {
+    const tokenContract = new Contract(tokenAddress);
+    const simResult = await readSimulate(
+      tokenContract.call('balance', new Address(userAddress).toScVal())
+    );
+    if (!rpc.Api.isSimulationSuccess(simResult)) return 0n;
+    if (!simResult.result) return 0n;
+    return BigInt(scValToNative(simResult.result.retval) as bigint | number | string);
+  } catch {
+    return 0n;
+  }
+}
