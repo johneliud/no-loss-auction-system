@@ -12,6 +12,7 @@ import {
   CONTRACT_ID,
   NETWORK_PASSPHRASE,
   RPC_URL,
+  SIMULATION_SOURCE,
 } from '../config';
 import { signTx } from './freighter';
 import type { AuctionState } from '../types';
@@ -19,19 +20,34 @@ import type { AuctionState } from '../types';
 const server = new rpc.Server(RPC_URL, { allowHttp: false });
 const contract = new Contract(CONTRACT_ID);
 
-async function buildAndSimulate(
-  sourceAddress: string,
-  operation: xdr.Operation
-) {
-  const source = await server.getAccount(sourceAddress);
-  const tx = new TransactionBuilder(source, {
+async function buildTx(sourceAddress: string, operation: xdr.Operation) {
+  const source = await server.getAccount(sourceAddress).catch(() => {
+    throw new Error(
+      'Your Stellar testnet account is not funded. Visit ' +
+        `https://friendbot.stellar.org/?addr=${sourceAddress} to fund it, then try again.`
+    );
+  });
+  return new TransactionBuilder(source, {
     fee: BASE_FEE,
     networkPassphrase: NETWORK_PASSPHRASE,
   })
     .addOperation(operation)
     .setTimeout(30)
     .build();
+}
 
+// Read-only simulation.
+async function readSimulate(operation: xdr.Operation) {
+  const tx = await buildTx(SIMULATION_SOURCE, operation);
+  return server.simulateTransaction(tx);
+}
+
+// Write simulation: uses the caller's account (required for auth).
+async function buildAndSimulate(
+  sourceAddress: string,
+  operation: xdr.Operation
+) {
+  const tx = await buildTx(sourceAddress, operation);
   return { tx, simResult: await server.simulateTransaction(tx) };
 }
 
@@ -42,14 +58,12 @@ async function submitTx(
   const { tx, simResult } = await buildAndSimulate(sourceAddress, operation);
 
   if (rpc.Api.isSimulationError(simResult)) {
-    throw new Error(
-      (simResult as rpc.Api.SimulateTransactionErrorResponse).error ??
-        'Simulation failed'
-    );
+    const msg = (simResult as rpc.Api.SimulateTransactionErrorResponse).error ?? 'Simulation failed';
+    throw new Error(msg);
   }
 
   if (!rpc.Api.isSimulationSuccess(simResult)) {
-    throw new Error('Simulation returned unexpected result');
+    throw new Error('Simulation returned an unexpected result');
   }
 
   const prepared = rpc.assembleTransaction(tx, simResult).build();
@@ -58,10 +72,9 @@ async function submitTx(
 
   const sendResult = await server.sendTransaction(signedTx);
   if (sendResult.status === 'ERROR') {
-    throw new Error('Failed to send transaction');
+    throw new Error('Failed to send transaction to the network');
   }
 
-  // Polling until confirmed
   for (let i = 0; i < 30; i++) {
     await new Promise((r) => setTimeout(r, 2000));
     const result = await server.getTransaction(sendResult.hash);
@@ -69,7 +82,7 @@ async function submitTx(
       return result as rpc.Api.GetSuccessfulTransactionResponse;
     }
     if (result.status === rpc.Api.GetTransactionStatus.FAILED) {
-      throw new Error('Transaction failed on-chain');
+      throw new Error('Transaction was rejected by the network');
     }
   }
   throw new Error('Transaction confirmation timed out');
@@ -83,13 +96,10 @@ function parseOptAddress(raw: unknown): string | null {
 }
 
 export async function getAuction(
-  sourceAddress: string
+  _sourceAddress: string
 ): Promise<AuctionState | null> {
   try {
-    const { simResult } = await buildAndSimulate(
-      sourceAddress,
-      contract.call('get_auction')
-    );
+    const simResult = await readSimulate(contract.call('get_auction'));
 
     if (!rpc.Api.isSimulationSuccess(simResult)) return null;
     if (!simResult.result) return null;
@@ -114,12 +124,9 @@ export async function getAuction(
   }
 }
 
-export async function hasAuction(sourceAddress: string): Promise<boolean> {
+export async function hasAuction(_sourceAddress: string): Promise<boolean> {
   try {
-    const { simResult } = await buildAndSimulate(
-      sourceAddress,
-      contract.call('has_auction')
-    );
+    const simResult = await readSimulate(contract.call('has_auction'));
     if (!rpc.Api.isSimulationSuccess(simResult)) return false;
     if (!simResult.result) return false;
     return Boolean(scValToNative(simResult.result.retval));
