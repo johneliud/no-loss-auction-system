@@ -58,7 +58,7 @@ export default function App() {
       <>
         <WalletConnect onConnected={onWalletConnected} />
         {loadError && (
-          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-red-600 text-white text-xs px-4 py-2 max-w-sm text-center">
+          <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-sui-red text-sui-white text-xs px-4 py-2 max-w-sm text-center">
             {loadError}
           </div>
         )}
@@ -68,10 +68,10 @@ export default function App() {
 
   if (appState === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-sui-black">
         <div className="text-center space-y-3">
-          <div className="w-5 h-5 border-2 border-gray-900 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-sm text-gray-500">Loading auction state...</p>
+          <div className="w-5 h-5 border-2 border-sui-gold border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-sm text-white/50">Loading auction state...</p>
         </div>
       </div>
     );
@@ -82,20 +82,25 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-sui-black">
       {/* Top bar */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <header className="bg-sui-off-black border-b border-white/10 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold text-gray-900 tracking-tight">
-              No-Loss Auction
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 bg-sui-gold inline-block" />
+              <span className="text-sm font-semibold text-sui-white tracking-tight">
+                No-Loss Auction
+              </span>
+            </div>
+            <span className="hidden sm:block text-xs text-white/30 font-mono">
+              Stellar Testnet
             </span>
-            <span className="hidden sm:block text-xs text-gray-400">Stellar Testnet</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-gray-400 inline-block" />
-              <span className="text-xs font-mono text-gray-500">
+              <span className="w-1.5 h-1.5 rounded-full bg-sui-teal inline-block" />
+              <span className="text-xs font-mono text-white/50">
                 {walletAddress.slice(0, 4)}...{walletAddress.slice(-4)}
               </span>
             </div>
@@ -105,7 +110,7 @@ export default function App() {
                 setAuction(null);
                 setAppState('no_wallet');
               }}
-              className="text-xs text-gray-400 hover:text-gray-700 transition-colors"
+              className="text-xs text-white/30 hover:text-white/70 transition-colors"
             >
               Disconnect
             </button>
@@ -124,7 +129,6 @@ export default function App() {
               onRefresh={onAuctionChange}
             />
 
-            {/* Bid form - only during active auction */}
             {phase === 'active' && (
               <PlaceBid
                 auction={auction}
@@ -133,7 +137,6 @@ export default function App() {
               />
             )}
 
-            {/* Finalize / Cancel actions */}
             <AuctionActions
               auction={auction}
               phase={phase}
@@ -145,15 +148,15 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 bg-white mt-16">
+      <footer className="border-t border-white/10 bg-sui-off-black mt-16">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-white/30">
             Contract:{' '}
             <a
-              href={`https://stellar.expert/explorer/testnet/contract/CBUBJIIAYFI62MZ6Y272IPEWBDHPLXAAG6YX7SJREA7XLZZLTZ4KKZJF`}
+              href="https://stellar.expert/explorer/testnet/contract/CBUBJIIAYFI62MZ6Y272IPEWBDHPLXAAG6YX7SJREA7XLZZLTZ4KKZJF"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-mono underline underline-offset-2 hover:text-gray-700 transition-colors"
+              className="font-mono text-white/50 hover:text-sui-gold transition-colors"
             >
               CBUB...KZJF
             </a>
@@ -162,7 +165,7 @@ export default function App() {
             href="https://stellar.expert/explorer/testnet"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-gray-400 hover:text-gray-700 transition-colors"
+            className="text-xs text-white/30 hover:text-sui-gold transition-colors"
           >
             Stellar Expert
           </a>
