@@ -164,6 +164,35 @@ impl NoLossAuction {
             .extend_ttl(LIFETIME_THRESHOLD, LIFETIME_BUMP);
     }
 
+    /// Cancel the auction. Only allowed if no bids have been placed.
+    pub fn cancel(env: Env) {
+        let mut auction: AuctionState = env
+            .storage()
+            .instance()
+            .get(&DataKey::Auction)
+            .expect("not initialized");
+
+        auction.seller.require_auth();
+
+        if auction.finalized {
+            panic!("already finalized")
+        }
+        if auction.cancelled {
+            panic!("already cancelled")
+        }
+        if auction.highest_bidder.is_some() {
+            panic!("cannot cancel: bids exist")
+        }
+
+        auction.cancelled = true;
+        env.storage().instance().set(&DataKey::Auction, &auction);
+        env.storage()
+            .instance()
+            .extend_ttl(LIFETIME_THRESHOLD, LIFETIME_BUMP);
+
+        emit(&env, "auction_cancelled", ());
+    }
+
     
 }
 
