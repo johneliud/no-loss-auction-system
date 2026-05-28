@@ -42,8 +42,14 @@ function phaseBadge(phase: AuctionPhase) {
   }
 }
 
-function truncate(addr: string) {
+function truncate(addr: string | null | undefined) {
+  if (!addr) return '—';
   return `${addr.slice(0, 6)}...${addr.slice(-6)}`;
+}
+
+function safeXlm(stroops: bigint | null | undefined): string {
+  if (stroops === null || stroops === undefined) return '—';
+  try { return stroopsToXlm(BigInt(stroops as bigint)); } catch { return '—'; }
 }
 
 export default function AuctionInfo({
@@ -88,15 +94,15 @@ export default function AuctionInfo({
 
         <div className="stat-row">
           <span className="stat-label">Minimum Bid</span>
-          <span className="stat-value">{stroopsToXlm(auction.min_bid)} XLM</span>
+          <span className="stat-value">{safeXlm(auction.min_bid)} XLM</span>
         </div>
 
         <div className="stat-row">
           <span className="stat-label">Highest Bid</span>
           <span className="stat-value font-semibold">
-            {auction.highest_bid === 0n
+            {!auction.highest_bid || auction.highest_bid === 0n
               ? 'No bids yet'
-              : `${stroopsToXlm(auction.highest_bid)} XLM`}
+              : `${safeXlm(auction.highest_bid)} XLM`}
           </span>
         </div>
 
@@ -144,7 +150,7 @@ export default function AuctionInfo({
           <p className="text-sm text-gray-600 mt-1">
             Winning bid:{' '}
             <span className="font-semibold">
-              {stroopsToXlm(auction.highest_bid)} XLM
+              {safeXlm(auction.highest_bid)} XLM
             </span>
           </p>
           {isWinner && (
