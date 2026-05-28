@@ -5,6 +5,9 @@ export const NATIVE_TOKEN = 'CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HH
 export const NETWORK_PASSPHRASE = Networks.TESTNET;
 export const RPC_URL = 'https://soroban-testnet.stellar.org';
 
+// Funded testnet account used as the source for read-only simulations.
+export const SIMULATION_SOURCE = 'GB3B2MHRV5KZXSGJ6RG2IJMI4T4J4S5WIQAM2RIUQ57QZNP4B745EDM5';
+
 export const STROOP = 10_000_000n;
 
 export function xlmToStroops(xlm: string): bigint {
