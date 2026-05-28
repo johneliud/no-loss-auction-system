@@ -74,3 +74,42 @@ async function submitTx(
   }
   throw new Error('Transaction confirmation timed out');
 }
+
+function parseOptAddress(raw: unknown): string | null {
+  if (raw === null || raw === undefined) return null;
+  if (typeof raw === 'string') return raw;
+  if (Array.isArray(raw)) return raw.length > 0 ? (raw[0] as string) : null;
+  return null;
+}
+
+export async function getAuction(
+  sourceAddress: string
+): Promise<AuctionState | null> {
+  try {
+    const { simResult } = await buildAndSimulate(
+      sourceAddress,
+      contract.call('get_auction')
+    );
+
+    if (!rpc.Api.isSimulationSuccess(simResult)) return null;
+    if (!simResult.result) return null;
+
+    const native = scValToNative(simResult.result.retval) as Record<
+      string,
+      unknown
+    >;
+
+    return {
+      seller: native.seller as string,
+      token: native.token as string,
+      min_bid: BigInt(native.min_bid as string | number | bigint),
+      deadline: BigInt(native.deadline as string | number | bigint),
+      highest_bidder: parseOptAddress(native.highest_bidder),
+      highest_bid: BigInt(native.highest_bid as string | number | bigint),
+      finalized: native.finalized as boolean,
+      cancelled: native.cancelled as boolean,
+    };
+  } catch {
+    return null;
+  }
+}
