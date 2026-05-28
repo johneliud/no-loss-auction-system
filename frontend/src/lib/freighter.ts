@@ -1,6 +1,6 @@
 import {
   isConnected,
-  getAddress,
+  requestAccess,
   signTransaction,
 } from '@stellar/freighter-api';
 import { NETWORK_PASSPHRASE } from '../config';
@@ -15,7 +15,7 @@ export async function freighterInstalled(): Promise<boolean> {
 }
 
 export async function getWalletAddress(): Promise<string> {
-  const res = await getAddress();
+  const res = await requestAccess();
   if (res.error) throw new Error(res.error.message);
   return res.address;
 }
