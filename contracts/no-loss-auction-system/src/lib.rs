@@ -129,6 +129,41 @@ impl NoLossAuction {
             .extend_ttl(LIFETIME_THRESHOLD, LIFETIME_BUMP);
     }
 
+    /// Finalize the auction after the deadline. Winning bid is transferred to the seller.
+    pub fn finalize(env: Env) {
+        let mut auction: AuctionState = env
+            .storage()
+            .instance()
+            .get(&DataKey::Auction)
+            .expect("not initialized");
+
+        if auction.finalized {
+            panic!("already finalized")
+        }
+        if auction.cancelled {
+            panic!("auction is cancelled")
+        }
+        if env.ledger().timestamp() < auction.deadline {
+            panic!("auction not yet ended")
+        }
+
+        if let Some(ref _winner) = auction.highest_bidder.clone() {
+            let tok = token::Client::new(&env, &auction.token);
+            tok.transfer(
+                &env.current_contract_address(),
+                &auction.seller,
+                &auction.highest_bid,
+            );
+            emit(&env, "auction_finalized", auction.highest_bid);
+        }
+
+        auction.finalized = true;
+        env.storage().instance().set(&DataKey::Auction, &auction);
+        env.storage()
+            .instance()
+            .extend_ttl(LIFETIME_THRESHOLD, LIFETIME_BUMP);
+    }
+
     
 }
 
