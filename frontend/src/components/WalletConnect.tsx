@@ -28,29 +28,32 @@ export default function WalletConnect({ onConnected }: Props) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-sui-black px-4">
       {/* Wordmark */}
       <div className="mb-12 text-center">
-        <p className="text-xs font-medium tracking-[0.3em] text-gray-400 uppercase mb-3">
-          Stellar Testnet
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight text-gray-900">
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <span className="w-3 h-3 bg-sui-gold inline-block" />
+          <span className="text-xs font-mono tracking-[0.25em] text-white/40 uppercase">
+            Stellar Testnet
+          </span>
+        </div>
+        <h1 className="text-4xl font-semibold tracking-tight text-sui-white">
           No-Loss Auction
         </h1>
-        <p className="mt-2 text-sm text-gray-500 max-w-xs">
+        <p className="mt-3 text-sm text-white/50 max-w-xs leading-relaxed">
           Bid with XLM. If outbid, your tokens are returned instantly.
         </p>
       </div>
 
       {/* Connect card */}
-      <div className="w-full max-w-sm border border-gray-200 p-8">
-        <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+      <div className="w-full max-w-sm border border-white/10 bg-sui-off-black p-8">
+        <p className="text-sm text-white/60 mb-6 leading-relaxed">
           Connect your{' '}
           <a
             href="https://www.freighter.app"
             target="_blank"
             rel="noopener noreferrer"
-            className="underline underline-offset-2 text-gray-900 hover:text-gray-600"
+            className="text-sui-gold hover:text-yellow-300 transition-colors"
           >
             Freighter
           </a>{' '}
@@ -64,7 +67,7 @@ export default function WalletConnect({ onConnected }: Props) {
         >
           {status === 'connecting' ? (
             <>
-              <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <span className="w-3.5 h-3.5 border-2 border-sui-black border-t-transparent rounded-full animate-spin" />
               Connecting...
             </>
           ) : (
@@ -73,14 +76,14 @@ export default function WalletConnect({ onConnected }: Props) {
         </button>
 
         {status === 'error' && (
-          <p className="mt-4 text-xs text-red-600 leading-relaxed">{errorMsg}</p>
+          <p className="mt-4 text-xs text-sui-red leading-relaxed">{errorMsg}</p>
         )}
       </div>
 
       {/* Footer note */}
-      <p className="mt-8 text-xs text-gray-400">
+      <p className="mt-8 text-xs text-white/30">
         Make sure Freighter is set to{' '}
-        <span className="font-medium text-gray-600">Testnet</span> before connecting.
+        <span className="font-medium text-white/60">Testnet</span> before connecting.
       </p>
     </div>
   );
