@@ -2,6 +2,13 @@ import { useState } from 'react';
 import { finalize, cancelAuction } from '../lib/soroban';
 import type { AuctionState, AuctionPhase } from '../types';
 
+function extractMsg(e: unknown): string {
+  if (e instanceof Error) return e.message;
+  if (typeof e === 'object' && e !== null && 'message' in e) return String((e as {message: unknown}).message);
+  if (typeof e === 'string') return e;
+  return 'Transaction failed';
+}
+
 interface Props {
   auction: AuctionState;
   phase: AuctionPhase;
@@ -36,7 +43,7 @@ export default function AuctionActions({
         onSuccess();
       }, 1500);
     } catch (e) {
-      setErrorMsg(e instanceof Error ? e.message : 'Transaction failed');
+      setErrorMsg(extractMsg(e));
       setFinalizeStatus('error');
     }
   }
@@ -53,7 +60,7 @@ export default function AuctionActions({
         onSuccess();
       }, 1500);
     } catch (e) {
-      setErrorMsg(e instanceof Error ? e.message : 'Transaction failed');
+      setErrorMsg(extractMsg(e));
       setCancelStatus('error');
     }
   }
