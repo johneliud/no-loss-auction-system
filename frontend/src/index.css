@@ -15,86 +15,87 @@
   }
 
   body {
-    @apply bg-white text-gray-900 font-sans;
+    @apply bg-sui-black text-sui-white font-sans;
   }
 }
 
 @layer components {
-  /* Shared card shell */
+  /* Card shell — dark surface with subtle border */
   .card {
-    @apply bg-white border border-gray-200 rounded-none p-6;
+    @apply bg-sui-off-black border border-white/10 rounded-none p-6;
   }
 
-  /* Primary action button */
+  /* Primary action — gold fill, black text */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2
-           bg-gray-900 text-white text-sm font-medium
-           px-5 py-2.5 border border-gray-900
+           bg-sui-gold text-sui-black text-sm font-semibold
+           px-5 py-2.5 border border-sui-gold
            transition-colors duration-150
-           hover:bg-gray-700 hover:border-gray-700
+           hover:bg-yellow-300 hover:border-yellow-300
            disabled:opacity-40 disabled:pointer-events-none;
   }
 
-  /* Secondary / ghost button */
+  /* Secondary / ghost — transparent with white border */
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2
-           bg-white text-gray-900 text-sm font-medium
-           px-5 py-2.5 border border-gray-300
+           bg-transparent text-sui-white text-sm font-medium
+           px-5 py-2.5 border border-white/20
            transition-colors duration-150
-           hover:bg-gray-50 hover:border-gray-400
+           hover:border-white/50 hover:bg-white/5
            disabled:opacity-40 disabled:pointer-events-none;
   }
 
-  /* Danger button */
+  /* Danger button — red outline */
   .btn-danger {
     @apply inline-flex items-center justify-center gap-2
-           bg-white text-red-600 text-sm font-medium
-           px-5 py-2.5 border border-red-300
+           bg-transparent text-sui-red text-sm font-medium
+           px-5 py-2.5 border border-sui-red/50
            transition-colors duration-150
-           hover:bg-red-50 hover:border-red-400
+           hover:bg-sui-red/10 hover:border-sui-red
            disabled:opacity-40 disabled:pointer-events-none;
   }
 
-  /* Form field */
+  /* Form label */
   .field-label {
-    @apply block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5;
+    @apply block text-xs font-medium text-sui-dark uppercase tracking-wider mb-1.5;
   }
 
+  /* Form input */
   .field-input {
-    @apply w-full border border-gray-300 bg-white text-gray-900
+    @apply w-full border border-white/10 bg-sui-black text-sui-white
            text-sm px-3 py-2.5 font-mono
            outline-none transition-colors duration-150
-           focus:border-gray-900 placeholder:text-gray-400;
+           focus:border-sui-gold placeholder:text-white/25;
   }
 
   /* Status badge */
   .badge {
-    @apply inline-block text-xs font-medium px-2 py-0.5 uppercase tracking-wider;
+    @apply inline-block text-xs font-semibold px-2 py-0.5 uppercase tracking-wider;
   }
 
   .badge-active {
-    @apply bg-gray-900 text-white;
+    @apply bg-sui-gold text-sui-black;
   }
   .badge-ended {
-    @apply bg-gray-200 text-gray-700;
+    @apply bg-white/10 text-sui-dark;
   }
   .badge-done {
-    @apply bg-gray-100 text-gray-500;
+    @apply bg-sui-teal/20 text-sui-teal border border-sui-teal/30;
   }
   .badge-cancelled {
-    @apply bg-red-50 text-red-600 border border-red-200;
+    @apply bg-sui-red/10 text-sui-red border border-sui-red/30;
   }
 
   /* Stat row in info card */
   .stat-row {
-    @apply flex items-baseline justify-between py-3 border-b border-gray-100 last:border-0;
+    @apply flex items-baseline justify-between py-3 border-b border-white/10 last:border-0;
   }
 
   .stat-label {
-    @apply text-xs font-medium text-gray-400 uppercase tracking-wider;
+    @apply text-xs font-medium text-sui-dark uppercase tracking-wider;
   }
 
   .stat-value {
-    @apply text-sm font-mono text-gray-900 text-right break-all max-w-[60%];
+    @apply text-sm font-mono text-sui-white text-right break-all max-w-[60%];
   }
 }
