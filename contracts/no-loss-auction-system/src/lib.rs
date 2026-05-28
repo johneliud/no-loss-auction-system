@@ -77,6 +77,58 @@ impl NoLossAuction {
         emit(&env, "auction_created", deadline);
     }
 
+    /// Place a bid. The previous highest bidder is refunded immediately (no-loss).
+    pub fn place_bid(env: Env, bidder: Address, amount: i128) {
+        bidder.require_auth();
+
+        let mut auction: AuctionState = env
+            .storage()
+            .instance()
+            .get(&DataKey::Auction)
+            .expect("not initialized");
+
+        if auction.finalized {
+            panic!("auction already finalized")
+        }
+        if auction.cancelled {
+            panic!("auction is cancelled")
+        }
+        if env.ledger().timestamp() >= auction.deadline {
+            panic!("auction has ended")
+        }
+        if amount < auction.min_bid {
+            panic!("bid below minimum")
+        }
+        if auction.highest_bidder.is_some() && amount <= auction.highest_bid {
+            panic!("must exceed current highest bid")
+        }
+
+        let tok = token::Client::new(&env, &auction.token);
+
+        // Lock new bid in the contract
+        tok.transfer(&bidder, &env.current_contract_address(), &amount);
+
+        // Automatically refund the previous highest bidder (no-loss guarantee)
+        if let Some(ref prev) = auction.highest_bidder.clone() {
+            tok.transfer(
+                &env.current_contract_address(),
+                prev,
+                &auction.highest_bid,
+            );
+            emit(&env, "bid_refunded", auction.highest_bid);
+        }
+
+        emit(&env, "bid_placed", amount);
+
+        auction.highest_bidder = Some(bidder);
+        auction.highest_bid = amount;
+
+        env.storage().instance().set(&DataKey::Auction, &auction);
+        env.storage()
+            .instance()
+            .extend_ttl(LIFETIME_THRESHOLD, LIFETIME_BUMP);
+    }
+
     
 }
 
