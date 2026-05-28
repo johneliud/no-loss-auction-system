@@ -65,21 +65,19 @@ export default function AuctionActions({
     }
   }
 
-  // Nothing to show if auction is already resolved or no actions are relevant
   if (phase === 'finalized' || phase === 'cancelled' || phase === 'loading') {
     return null;
   }
 
   return (
     <div className="card space-y-3">
-      <h3 className="text-base font-semibold text-gray-900">Actions</h3>
+      <h3 className="text-base font-semibold text-sui-white">Actions</h3>
 
-      {/* Finalize - available to anyone once deadline has passed */}
+      {/* Finalize — available to anyone once deadline has passed */}
       {phase === 'ended' && (
         <div>
-          <p className="text-xs text-gray-500 mb-3">
-            The auction deadline has passed. Finalize to send the winning bid to the
-            seller.
+          <p className="text-xs text-white/40 mb-3">
+            The auction deadline has passed. Finalize to send the winning bid to the seller.
           </p>
           <button
             onClick={handleFinalize}
@@ -88,7 +86,7 @@ export default function AuctionActions({
           >
             {finalizeStatus === 'submitting' ? (
               <>
-                <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span className="w-3.5 h-3.5 border-2 border-sui-black border-t-transparent rounded-full animate-spin" />
                 Finalizing...
               </>
             ) : finalizeStatus === 'success' ? (
@@ -100,10 +98,10 @@ export default function AuctionActions({
         </div>
       )}
 
-      {/* Cancel - seller only, no bids, auction still active */}
+      {/* Cancel — seller only, no bids, active */}
       {phase === 'active' && isSeller && !hasBids && (
         <div>
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-white/40 mb-3">
             No bids have been placed. You can cancel this auction.
           </p>
           <button
@@ -113,7 +111,7 @@ export default function AuctionActions({
           >
             {cancelStatus === 'submitting' ? (
               <>
-                <span className="w-3.5 h-3.5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
+                <span className="w-3.5 h-3.5 border-2 border-sui-red/60 border-t-transparent rounded-full animate-spin" />
                 Cancelling...
               </>
             ) : cancelStatus === 'success' ? (
@@ -125,15 +123,15 @@ export default function AuctionActions({
         </div>
       )}
 
-      {/* Seller with bids - can't cancel */}
+      {/* Seller with bids — can't cancel */}
       {phase === 'active' && isSeller && hasBids && (
-        <p className="text-xs text-gray-400 italic">
-          Bids have been placed, this auction cannot be cancelled.
+        <p className="text-xs text-white/30 italic">
+          Bids have been placed — this auction cannot be cancelled.
         </p>
       )}
 
       {(finalizeStatus === 'error' || cancelStatus === 'error') && (
-        <p className="text-xs text-red-600 leading-relaxed pt-1">{errorMsg}</p>
+        <p className="text-xs text-sui-red leading-relaxed pt-1">{errorMsg}</p>
       )}
     </div>
   );
