@@ -1,23 +1,34 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, vec, Env, String, Vec};
+use soroban_sdk::{contract, contractimpl, contracttype, token, Address, Env, Symbol};
 
-#[contract]
-pub struct Contract;
+// LIFETIME_THRESHOLD: 2 days
+// LIFETIME_BUMP: 6 days
+const LIFETIME_THRESHOLD: u32 = 34_560;
+const LIFETIME_BUMP: u32 = 103_680;
 
-// This is a sample contract. Replace this placeholder with your own contract logic.
-// A corresponding test example is available in `test.rs`.
-//
-// For comprehensive examples, visit <https://github.com/stellar/soroban-examples>.
-// The repository includes use cases for the Stellar ecosystem, such as data storage on
-// the blockchain, token swaps, liquidity pools, and more.
-//
-// Refer to the official documentation:
-// <https://developers.stellar.org/docs/build/smart-contracts/overview>.
-#[contractimpl]
-impl Contract {
-    pub fn hello(env: Env, to: String) -> Vec<String> {
-        vec![&env, String::from_str(&env, "Hello"), to]
-    }
+#[contracttype]
+#[derive(Clone)]
+pub struct AuctionState {
+    pub seller: Address,
+    pub token: Address,
+    pub min_bid: i128,
+    pub deadline: u64,
+    pub highest_bidder: Option<Address>,
+    pub highest_bid: i128,
+    pub finalized: bool,
+    pub cancelled: bool,
 }
+
+#[contracttype]
+pub enum DataKey {
+    Auction,
+}
+
+fn emit(env: &Env, topic: &str, data: impl soroban_sdk::IntoVal<Env, soroban_sdk::Val>) {
+    env.events()
+        .publish((Symbol::new(env, topic),), data);
+}
+
+
 
 mod test;
