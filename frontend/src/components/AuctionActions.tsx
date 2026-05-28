@@ -4,7 +4,8 @@ import type { AuctionState, AuctionPhase } from '../types';
 
 function extractMsg(e: unknown): string {
   if (e instanceof Error) return e.message;
-  if (typeof e === 'object' && e !== null && 'message' in e) return String((e as {message: unknown}).message);
+  if (typeof e === 'object' && e !== null && 'message' in e)
+    return String((e as { message: unknown }).message);
   if (typeof e === 'string') return e;
   return 'Transaction failed';
 }
@@ -28,8 +29,7 @@ export default function AuctionActions({
   const [cancelStatus, setCancelStatus] = useState<ActionStatus>('idle');
   const [errorMsg, setErrorMsg] = useState('');
 
-  const isSeller =
-    walletAddress.toLowerCase() === auction.seller.toLowerCase();
+  const isSeller = walletAddress.toLowerCase() === auction.seller.toLowerCase();
   const hasBids = auction.highest_bidder !== null;
 
   async function handleFinalize() {
@@ -78,15 +78,13 @@ export default function AuctionActions({
       {phase === 'ended' && (
         <div>
           <p className="text-xs text-gray-500 mb-3">
-            The auction deadline has passed. Finalize to send the winning bid to
-            the seller.
+            The auction deadline has passed. Finalize to send the winning bid to the
+            seller.
           </p>
           <button
             onClick={handleFinalize}
             className="btn-primary w-full"
-            disabled={
-              finalizeStatus === 'submitting' || finalizeStatus === 'success'
-            }
+            disabled={finalizeStatus === 'submitting' || finalizeStatus === 'success'}
           >
             {finalizeStatus === 'submitting' ? (
               <>
@@ -111,9 +109,7 @@ export default function AuctionActions({
           <button
             onClick={handleCancel}
             className="btn-danger w-full"
-            disabled={
-              cancelStatus === 'submitting' || cancelStatus === 'success'
-            }
+            disabled={cancelStatus === 'submitting' || cancelStatus === 'success'}
           >
             {cancelStatus === 'submitting' ? (
               <>

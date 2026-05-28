@@ -17,10 +17,7 @@ export type AuctionPhase =
   | 'finalized'
   | 'cancelled';
 
-export function auctionPhase(
-  auction: AuctionState | null,
-  nowSec: number
-): AuctionPhase {
+export function auctionPhase(auction: AuctionState | null, nowSec: number): AuctionPhase {
   if (!auction) return 'no_auction';
   if (auction.cancelled) return 'cancelled';
   if (auction.finalized) return 'finalized';

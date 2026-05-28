@@ -6,7 +6,8 @@ export const NETWORK_PASSPHRASE = Networks.TESTNET;
 export const RPC_URL = 'https://soroban-testnet.stellar.org';
 
 // Funded testnet account used as the source for read-only simulations.
-export const SIMULATION_SOURCE = 'GB3B2MHRV5KZXSGJ6RG2IJMI4T4J4S5WIQAM2RIUQ57QZNP4B745EDM5';
+export const SIMULATION_SOURCE =
+  'GB3B2MHRV5KZXSGJ6RG2IJMI4T4J4S5WIQAM2RIUQ57QZNP4B745EDM5';
 
 export const STROOP = 10_000_000n;
 

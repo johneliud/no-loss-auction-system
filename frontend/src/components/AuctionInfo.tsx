@@ -49,15 +49,14 @@ function truncate(addr: string | null | undefined) {
 
 function safeXlm(stroops: bigint | null | undefined): string {
   if (stroops === null || stroops === undefined) return '—';
-  try { return stroopsToXlm(BigInt(stroops as bigint)); } catch { return '—'; }
+  try {
+    return stroopsToXlm(BigInt(stroops as bigint));
+  } catch {
+    return '—';
+  }
 }
 
-export default function AuctionInfo({
-  auction,
-  phase,
-  walletAddress,
-  onRefresh,
-}: Props) {
+export default function AuctionInfo({ auction, phase, walletAddress, onRefresh }: Props) {
   const isWinner =
     auction.highest_bidder &&
     auction.highest_bidder.toLowerCase() === walletAddress.toLowerCase();
@@ -69,9 +68,7 @@ export default function AuctionInfo({
       {/* Header */}
       <div className="flex items-start justify-between mb-5">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            {phaseBadge(phase)}
-          </div>
+          <div className="flex items-center gap-2 mb-1">{phaseBadge(phase)}</div>
           <h2 className="text-lg font-semibold text-gray-900">Auction Details</h2>
           <p className="text-xs font-mono text-gray-400 mt-0.5">
             {truncate(CONTRACT_ID)}
@@ -113,9 +110,7 @@ export default function AuctionInfo({
               <>
                 {truncate(auction.highest_bidder)}
                 {isWinner && (
-                  <span className="ml-2 text-xs font-medium text-gray-500">
-                    (you)
-                  </span>
+                  <span className="ml-2 text-xs font-medium text-gray-500">(you)</span>
                 )}
               </>
             ) : (
@@ -149,9 +144,7 @@ export default function AuctionInfo({
           </p>
           <p className="text-sm text-gray-600 mt-1">
             Winning bid:{' '}
-            <span className="font-semibold">
-              {safeXlm(auction.highest_bid)} XLM
-            </span>
+            <span className="font-semibold">{safeXlm(auction.highest_bid)} XLM</span>
           </p>
           {isWinner && (
             <p className="mt-2 text-xs font-medium text-gray-700 border-t border-gray-200 pt-2">

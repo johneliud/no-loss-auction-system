@@ -8,12 +8,7 @@ import {
   nativeToScVal,
   xdr,
 } from '@stellar/stellar-sdk';
-import {
-  CONTRACT_ID,
-  NETWORK_PASSPHRASE,
-  RPC_URL,
-  SIMULATION_SOURCE,
-} from '../config';
+import { CONTRACT_ID, NETWORK_PASSPHRASE, RPC_URL, SIMULATION_SOURCE } from '../config';
 import { signTx } from './freighter';
 import type { AuctionState } from '../types';
 
@@ -43,10 +38,7 @@ async function readSimulate(operation: xdr.Operation) {
 }
 
 // Write simulation: uses the caller's account (required for auth).
-async function buildAndSimulate(
-  sourceAddress: string,
-  operation: xdr.Operation
-) {
+async function buildAndSimulate(sourceAddress: string, operation: xdr.Operation) {
   const tx = await buildTx(sourceAddress, operation);
   return { tx, simResult: await server.simulateTransaction(tx) };
 }
@@ -58,7 +50,9 @@ async function submitTx(
   const { tx, simResult } = await buildAndSimulate(sourceAddress, operation);
 
   if (rpc.Api.isSimulationError(simResult)) {
-    const msg = (simResult as rpc.Api.SimulateTransactionErrorResponse).error ?? 'Simulation failed';
+    const msg =
+      (simResult as rpc.Api.SimulateTransactionErrorResponse).error ??
+      'Simulation failed';
     throw new Error(msg);
   }
 
@@ -95,19 +89,14 @@ function parseOptAddress(raw: unknown): string | null {
   return null;
 }
 
-export async function getAuction(
-  _sourceAddress: string
-): Promise<AuctionState | null> {
+export async function getAuction(_sourceAddress: string): Promise<AuctionState | null> {
   try {
     const simResult = await readSimulate(contract.call('get_auction'));
 
     if (!rpc.Api.isSimulationSuccess(simResult)) return null;
     if (!simResult.result) return null;
 
-    const native = scValToNative(simResult.result.retval) as Record<
-      string,
-      unknown
-    >;
+    const native = scValToNative(simResult.result.retval) as Record<string, unknown>;
 
     return {
       seller: native.seller as string,

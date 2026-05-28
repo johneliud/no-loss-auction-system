@@ -3,7 +3,9 @@
 @tailwind utilities;
 
 @layer base {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     box-sizing: border-box;
   }
 
@@ -70,10 +72,18 @@
     @apply inline-block text-xs font-medium px-2 py-0.5 uppercase tracking-wider;
   }
 
-  .badge-active  { @apply bg-gray-900 text-white; }
-  .badge-ended   { @apply bg-gray-200 text-gray-700; }
-  .badge-done    { @apply bg-gray-100 text-gray-500; }
-  .badge-cancelled { @apply bg-red-50 text-red-600 border border-red-200; }
+  .badge-active {
+    @apply bg-gray-900 text-white;
+  }
+  .badge-ended {
+    @apply bg-gray-200 text-gray-700;
+  }
+  .badge-done {
+    @apply bg-gray-100 text-gray-500;
+  }
+  .badge-cancelled {
+    @apply bg-red-50 text-red-600 border border-red-200;
+  }
 
   /* Stat row in info card */
   .stat-row {

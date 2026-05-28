@@ -50,9 +50,8 @@ export default function App() {
   }
 
   const nowSec = Math.floor(Date.now() / 1000);
-  const phase: AuctionPhase = appState === 'has_auction'
-    ? auctionPhase(auction, nowSec)
-    : 'loading';
+  const phase: AuctionPhase =
+    appState === 'has_auction' ? auctionPhase(auction, nowSec) : 'loading';
 
   if (appState === 'no_wallet' || !walletAddress) {
     return (

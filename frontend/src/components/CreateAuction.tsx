@@ -23,7 +23,8 @@ export default function CreateAuction({ walletAddress, onSuccess }: Props) {
 
     try {
       if (!tokenAddress.trim()) throw new Error('Token address is required');
-      if (!minBid || parseFloat(minBid) <= 0) throw new Error('Minimum bid must be positive');
+      if (!minBid || parseFloat(minBid) <= 0)
+        throw new Error('Minimum bid must be positive');
       if (!durationDays || parseInt(durationDays) <= 0)
         throw new Error('Duration must be at least 1 day');
 
@@ -37,10 +38,14 @@ export default function CreateAuction({ walletAddress, onSuccess }: Props) {
         onSuccess();
       }, 1500);
     } catch (e) {
-      const msg = e instanceof Error ? e.message
-        : typeof e === 'object' && e !== null && 'message' in e ? String((e as {message: unknown}).message)
-        : typeof e === 'string' ? e
-        : 'Transaction failed';
+      const msg =
+        e instanceof Error
+          ? e.message
+          : typeof e === 'object' && e !== null && 'message' in e
+            ? String((e as { message: unknown }).message)
+            : typeof e === 'string'
+              ? e
+              : 'Transaction failed';
       setErrorMsg(msg);
       setStatus('error');
     }
@@ -53,9 +58,7 @@ export default function CreateAuction({ walletAddress, onSuccess }: Props) {
           <p className="text-xs font-medium tracking-[0.3em] text-gray-400 uppercase mb-2">
             No auction found
           </p>
-          <h2 className="text-2xl font-semibold text-gray-900">
-            Create Auction
-          </h2>
+          <h2 className="text-2xl font-semibold text-gray-900">Create Auction</h2>
           <p className="mt-1 text-sm text-gray-500">
             Set up a new no-loss auction on this contract.
           </p>
