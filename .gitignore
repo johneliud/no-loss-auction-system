@@ -4,3 +4,9 @@ target
 # Local settings
 .soroban
 .stellar
+
+# Node.js dependencies
+**/node_modules
+
+# Build output
+**/dist
