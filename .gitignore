@@ -8,6 +8,9 @@ target
 # Cargo lock file
 **/Cargo.lock
 
+# Contract test snapshots
+**/contracts/no-loss-auction-system/test_snapshots
+
 # Node.js dependencies
 **/node_modules
 
