@@ -81,3 +81,94 @@ export default function App() {
   if (appState === 'no_auction') {
     return <CreateAuction walletAddress={walletAddress} onSuccess={onAuctionChange} />;
   }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Top bar */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-semibold text-gray-900 tracking-tight">
+              No-Loss Auction
+            </span>
+            <span className="hidden sm:block text-xs text-gray-400">Stellar Testnet</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-gray-400 inline-block" />
+              <span className="text-xs font-mono text-gray-500">
+                {walletAddress.slice(0, 4)}...{walletAddress.slice(-4)}
+              </span>
+            </div>
+            <button
+              onClick={() => {
+                setWalletAddress(null);
+                setAuction(null);
+                setAppState('no_wallet');
+              }}
+              className="text-xs text-gray-400 hover:text-gray-700 transition-colors"
+            >
+              Disconnect
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main content */}
+      <main className="max-w-2xl mx-auto px-4 py-8 space-y-4">
+        {auction && (
+          <>
+            <AuctionInfo
+              auction={auction}
+              phase={phase}
+              walletAddress={walletAddress}
+              onRefresh={onAuctionChange}
+            />
+
+            {/* Bid form - only during active auction */}
+            {phase === 'active' && (
+              <PlaceBid
+                auction={auction}
+                walletAddress={walletAddress}
+                onSuccess={onAuctionChange}
+              />
+            )}
+
+            {/* Finalize / Cancel actions */}
+            <AuctionActions
+              auction={auction}
+              phase={phase}
+              walletAddress={walletAddress}
+              onSuccess={onAuctionChange}
+            />
+          </>
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-gray-200 bg-white mt-16">
+        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
+          <span className="text-xs text-gray-400">
+            Contract:{' '}
+            <a
+              href={`https://stellar.expert/explorer/testnet/contract/CBUBJIIAYFI62MZ6Y272IPEWBDHPLXAAG6YX7SJREA7XLZZLTZ4KKZJF`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono underline underline-offset-2 hover:text-gray-700 transition-colors"
+            >
+              CBUB...KZJF
+            </a>
+          </span>
+          <a
+            href="https://stellar.expert/explorer/testnet"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-gray-400 hover:text-gray-700 transition-colors"
+          >
+            Stellar Expert
+          </a>
+        </div>
+      </footer>
+    </div>
+  );
+}
