@@ -24,7 +24,7 @@ function Countdown({ deadline }: { deadline: bigint }) {
     return `${m}m ${s}s`;
   }, [secsLeft]);
 
-  return <span>{formatted}</span>;
+  return <span className="text-sui-gold">{formatted}</span>;
 }
 
 function phaseBadge(phase: AuctionPhase) {
@@ -68,15 +68,13 @@ export default function AuctionInfo({ auction, phase, walletAddress, onRefresh }
       {/* Header */}
       <div className="flex items-start justify-between mb-5">
         <div>
-          <div className="flex items-center gap-2 mb-1">{phaseBadge(phase)}</div>
-          <h2 className="text-lg font-semibold text-gray-900">Auction Details</h2>
-          <p className="text-xs font-mono text-gray-400 mt-0.5">
-            {truncate(CONTRACT_ID)}
-          </p>
+          <div className="flex items-center gap-2 mb-2">{phaseBadge(phase)}</div>
+          <h2 className="text-lg font-semibold text-sui-white">Auction Details</h2>
+          <p className="text-xs font-mono text-white/30 mt-0.5">{truncate(CONTRACT_ID)}</p>
         </div>
         <button
           onClick={onRefresh}
-          className="text-xs text-gray-400 hover:text-gray-700 transition-colors border border-gray-200 px-2 py-1 font-medium"
+          className="text-xs text-white/40 hover:text-sui-gold transition-colors border border-white/10 hover:border-sui-gold/50 px-3 py-1.5 font-medium"
         >
           Refresh
         </button>
@@ -96,7 +94,7 @@ export default function AuctionInfo({ auction, phase, walletAddress, onRefresh }
 
         <div className="stat-row">
           <span className="stat-label">Highest Bid</span>
-          <span className="stat-value font-semibold">
+          <span className="stat-value font-semibold text-sui-gold">
             {!auction.highest_bid || auction.highest_bid === 0n
               ? 'No bids yet'
               : `${safeXlm(auction.highest_bid)} XLM`}
@@ -110,19 +108,17 @@ export default function AuctionInfo({ auction, phase, walletAddress, onRefresh }
               <>
                 {truncate(auction.highest_bidder)}
                 {isWinner && (
-                  <span className="ml-2 text-xs font-medium text-gray-500">(you)</span>
+                  <span className="ml-2 text-xs font-medium text-sui-teal">(you)</span>
                 )}
               </>
             ) : (
-              <span className="text-gray-400">-</span>
+              <span className="text-white/25">—</span>
             )}
           </span>
         </div>
 
         <div className="stat-row">
-          <span className="stat-label">
-            {phase === 'active' ? 'Time Left' : 'Deadline'}
-          </span>
+          <span className="stat-label">{phase === 'active' ? 'Time Left' : 'Deadline'}</span>
           <span className="stat-value">
             {phase === 'active' ? (
               <Countdown deadline={auction.deadline} />
@@ -135,19 +131,21 @@ export default function AuctionInfo({ auction, phase, walletAddress, onRefresh }
 
       {/* Winner callout (finalized) */}
       {phase === 'finalized' && auction.highest_bidder && (
-        <div className="mt-5 border border-gray-200 bg-gray-50 p-4">
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">
+        <div className="mt-5 border border-sui-teal/30 bg-sui-teal/5 p-4">
+          <p className="text-xs font-medium text-sui-teal uppercase tracking-wider mb-1">
             Auction Winner
           </p>
-          <p className="text-sm font-mono text-gray-900 break-all">
+          <p className="text-sm font-mono text-sui-white break-all">
             {auction.highest_bidder}
           </p>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-white/60 mt-1">
             Winning bid:{' '}
-            <span className="font-semibold">{safeXlm(auction.highest_bid)} XLM</span>
+            <span className="font-semibold text-sui-gold">
+              {safeXlm(auction.highest_bid)} XLM
+            </span>
           </p>
           {isWinner && (
-            <p className="mt-2 text-xs font-medium text-gray-700 border-t border-gray-200 pt-2">
+            <p className="mt-2 text-xs font-medium text-sui-teal border-t border-sui-teal/20 pt-2">
               You won this auction.
             </p>
           )}
@@ -156,8 +154,8 @@ export default function AuctionInfo({ auction, phase, walletAddress, onRefresh }
 
       {/* Cancelled notice */}
       {phase === 'cancelled' && (
-        <div className="mt-5 border border-red-200 bg-red-50 p-4">
-          <p className="text-sm text-red-700">
+        <div className="mt-5 border border-sui-red/30 bg-sui-red/5 p-4">
+          <p className="text-sm text-sui-red/80">
             This auction was cancelled by the seller before any bids were placed.
           </p>
         </div>
