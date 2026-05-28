@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-white text-gray-900 font-sans;
+  }
+}
+
+@layer components {
+  /* Shared card shell */
+  .card {
+    @apply bg-white border border-gray-200 rounded-none p-6;
+  }
+
+  /* Primary action button */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+           bg-gray-900 text-white text-sm font-medium
+           px-5 py-2.5 border border-gray-900
+           transition-colors duration-150
+           hover:bg-gray-700 hover:border-gray-700
+           disabled:opacity-40 disabled:pointer-events-none;
+  }
+
+  /* Secondary / ghost button */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2
+           bg-white text-gray-900 text-sm font-medium
+           px-5 py-2.5 border border-gray-300
+           transition-colors duration-150
+           hover:bg-gray-50 hover:border-gray-400
+           disabled:opacity-40 disabled:pointer-events-none;
+  }
+
+  /* Danger button */
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2
+           bg-white text-red-600 text-sm font-medium
+           px-5 py-2.5 border border-red-300
+           transition-colors duration-150
+           hover:bg-red-50 hover:border-red-400
+           disabled:opacity-40 disabled:pointer-events-none;
+  }
+
+  /* Form field */
+  .field-label {
+    @apply block text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5;
+  }
+
+  .field-input {
+    @apply w-full border border-gray-300 bg-white text-gray-900
+           text-sm px-3 py-2.5 font-mono
+           outline-none transition-colors duration-150
+           focus:border-gray-900 placeholder:text-gray-400;
+  }
+
+  /* Status badge */
+  .badge {
+    @apply inline-block text-xs font-medium px-2 py-0.5 uppercase tracking-wider;
+  }
+
+  .badge-active  { @apply bg-gray-900 text-white; }
+  .badge-ended   { @apply bg-gray-200 text-gray-700; }
+  .badge-done    { @apply bg-gray-100 text-gray-500; }
+  .badge-cancelled { @apply bg-red-50 text-red-600 border border-red-200; }
+
+  /* Stat row in info card */
+  .stat-row {
+    @apply flex items-baseline justify-between py-3 border-b border-gray-100 last:border-0;
+  }
+
+  .stat-label {
+    @apply text-xs font-medium text-gray-400 uppercase tracking-wider;
+  }
+
+  .stat-value {
+    @apply text-sm font-mono text-gray-900 text-right break-all max-w-[60%];
+  }
+}
