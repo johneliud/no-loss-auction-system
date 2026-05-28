@@ -145,3 +145,22 @@ export async function initialize(
     )
   );
 }
+
+export async function placeBid(bidderAddress: string, amount: bigint) {
+  return submitTx(
+    bidderAddress,
+    contract.call(
+      'place_bid',
+      new Address(bidderAddress).toScVal(),
+      nativeToScVal(amount, { type: 'i128' })
+    )
+  );
+}
+
+export async function finalize(callerAddress: string) {
+  return submitTx(callerAddress, contract.call('finalize'));
+}
+
+export async function cancelAuction(callerAddress: string) {
+  return submitTx(callerAddress, contract.call('cancel'));
+}
