@@ -34,3 +34,43 @@ async function buildAndSimulate(
 
   return { tx, simResult: await server.simulateTransaction(tx) };
 }
+
+async function submitTx(
+  sourceAddress: string,
+  operation: xdr.Operation
+): Promise<rpc.Api.GetSuccessfulTransactionResponse> {
+  const { tx, simResult } = await buildAndSimulate(sourceAddress, operation);
+
+  if (rpc.Api.isSimulationError(simResult)) {
+    throw new Error(
+      (simResult as rpc.Api.SimulateTransactionErrorResponse).error ??
+        'Simulation failed'
+    );
+  }
+
+  if (!rpc.Api.isSimulationSuccess(simResult)) {
+    throw new Error('Simulation returned unexpected result');
+  }
+
+  const prepared = rpc.assembleTransaction(tx, simResult).build();
+  const signedXdr = await signTx(prepared.toXDR());
+  const signedTx = TransactionBuilder.fromXDR(signedXdr, NETWORK_PASSPHRASE);
+
+  const sendResult = await server.sendTransaction(signedTx);
+  if (sendResult.status === 'ERROR') {
+    throw new Error('Failed to send transaction');
+  }
+
+  // Polling until confirmed
+  for (let i = 0; i < 30; i++) {
+    await new Promise((r) => setTimeout(r, 2000));
+    const result = await server.getTransaction(sendResult.hash);
+    if (result.status === rpc.Api.GetTransactionStatus.SUCCESS) {
+      return result as rpc.Api.GetSuccessfulTransactionResponse;
+    }
+    if (result.status === rpc.Api.GetTransactionStatus.FAILED) {
+      throw new Error('Transaction failed on-chain');
+    }
+  }
+  throw new Error('Transaction confirmation timed out');
+}
