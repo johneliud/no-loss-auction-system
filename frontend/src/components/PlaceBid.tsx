@@ -9,7 +9,25 @@ interface Props {
   onSuccess: () => void;
 }
 
-type Status = 'idle' | 'submitting' | 'success' | 'error';
+type Status = 'idle' | 'submitting' | 'success' | 'error' | 'funding' | 'funded';
+
+function extractMsg(e: unknown): string {
+  if (e instanceof Error) return e.message;
+  if (typeof e === 'object' && e !== null && 'message' in e)
+    return String((e as { message: unknown }).message);
+  if (typeof e === 'string') return e;
+  return 'Transaction failed';
+}
+
+async function friendbotFund(address: string): Promise<void> {
+  const res = await fetch(
+    `https://friendbot.stellar.org/?addr=${encodeURIComponent(address)}`
+  );
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(text || `Friendbot returned ${res.status}`);
+  }
+}
 
 export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
   const [amount, setAmount] = useState('');
@@ -23,6 +41,20 @@ export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
 
   const isSeller =
     walletAddress.toLowerCase() === auction.seller.toLowerCase();
+
+  const isNotFunded = errorMsg.includes('not funded');
+
+  async function handleFund() {
+    setStatus('funding');
+    setErrorMsg('');
+    try {
+      await friendbotFund(walletAddress);
+      setStatus('funded');
+    } catch (e) {
+      setErrorMsg(extractMsg(e));
+      setStatus('error');
+    }
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -38,7 +70,9 @@ export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
         throw new Error(`Bid must be at least ${minDisplay} XLM`);
       }
       if (auction.highest_bid > 0n && stroops <= auction.highest_bid) {
-        throw new Error(`Bid must exceed the current highest bid of ${floorDisplay} XLM`);
+        throw new Error(
+          `Bid must exceed the current highest bid of ${floorDisplay} XLM`
+        );
       }
 
       await placeBid(walletAddress, stroops);
@@ -49,11 +83,7 @@ export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
         onSuccess();
       }, 1500);
     } catch (e) {
-      const msg = e instanceof Error ? e.message
-        : typeof e === 'object' && e !== null && 'message' in e ? String((e as {message: unknown}).message)
-        : typeof e === 'string' ? e
-        : 'Transaction failed';
-      setErrorMsg(msg);
+      setErrorMsg(extractMsg(e));
       setStatus('error');
     }
   }
@@ -89,11 +119,15 @@ export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
               value={amount}
               onChange={(e) => {
                 setAmount(e.target.value);
-                if (status === 'error') setStatus('idle');
+                if (status === 'error' || status === 'funded') setStatus('idle');
               }}
               placeholder={`Min ${floorDisplay} XLM`}
               className="field-input pr-12"
-              disabled={status === 'submitting' || status === 'success'}
+              disabled={
+                status === 'submitting' ||
+                status === 'success' ||
+                status === 'funding'
+              }
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-mono pointer-events-none">
               XLM
@@ -109,7 +143,12 @@ export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
         <button
           type="submit"
           className="btn-primary w-full"
-          disabled={!amount || status === 'submitting' || status === 'success'}
+          disabled={
+            !amount ||
+            status === 'submitting' ||
+            status === 'success' ||
+            status === 'funding'
+          }
         >
           {status === 'submitting' ? (
             <>
@@ -123,8 +162,44 @@ export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
           )}
         </button>
 
-        {status === 'error' && (
+        {/* Not-funded state: show one-click Friendbot button */}
+        {status === 'error' && isNotFunded && (
+          <div className="border border-gray-200 bg-gray-50 p-4 space-y-3">
+            <p className="text-xs text-gray-700 leading-relaxed">
+              Your testnet account is not funded. Click below to receive test
+              XLM from Friendbot, then place your bid.
+            </p>
+            <button
+              type="button"
+              onClick={handleFund}
+              className="btn-secondary w-full"
+            >
+              Fund Account with Friendbot
+            </button>
+          </div>
+        )}
+
+        {/* Generic error */}
+        {status === 'error' && !isNotFunded && (
           <p className="text-xs text-red-600 leading-relaxed">{errorMsg}</p>
+        )}
+
+        {/* Funding in progress */}
+        {status === 'funding' && (
+          <div className="flex items-center gap-2 text-xs text-gray-500">
+            <span className="w-3 h-3 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+            Requesting test XLM from Friendbot...
+          </div>
+        )}
+
+        {/* Funded successfully */}
+        {status === 'funded' && (
+          <div className="border border-gray-200 bg-gray-50 p-3">
+            <p className="text-xs text-gray-700">
+              Account funded. You now have test XLM. Enter an amount above and
+              place your bid.
+            </p>
+          </div>
         )}
 
         {status === 'success' && (
