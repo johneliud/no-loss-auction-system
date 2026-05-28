@@ -113,3 +113,35 @@ export async function getAuction(
     return null;
   }
 }
+
+export async function hasAuction(sourceAddress: string): Promise<boolean> {
+  try {
+    const { simResult } = await buildAndSimulate(
+      sourceAddress,
+      contract.call('has_auction')
+    );
+    if (!rpc.Api.isSimulationSuccess(simResult)) return false;
+    if (!simResult.result) return false;
+    return Boolean(scValToNative(simResult.result.retval));
+  } catch {
+    return false;
+  }
+}
+
+export async function initialize(
+  sellerAddress: string,
+  tokenAddress: string,
+  minBid: bigint,
+  durationSeconds: bigint
+) {
+  return submitTx(
+    sellerAddress,
+    contract.call(
+      'initialize',
+      new Address(sellerAddress).toScVal(),
+      new Address(tokenAddress).toScVal(),
+      nativeToScVal(minBid, { type: 'i128' }),
+      nativeToScVal(durationSeconds, { type: 'u64' })
+    )
+  );
+}
