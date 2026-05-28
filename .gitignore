@@ -5,6 +5,9 @@ target
 .soroban
 .stellar
 
+# Cargo lock file
+**/Cargo.lock
+
 # Node.js dependencies
 **/node_modules
 
