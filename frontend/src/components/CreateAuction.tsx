@@ -37,7 +37,11 @@ export default function CreateAuction({ walletAddress, onSuccess }: Props) {
         onSuccess();
       }, 1500);
     } catch (e) {
-      setErrorMsg(e instanceof Error ? e.message : 'Transaction failed');
+      const msg = e instanceof Error ? e.message
+        : typeof e === 'object' && e !== null && 'message' in e ? String((e as {message: unknown}).message)
+        : typeof e === 'string' ? e
+        : 'Transaction failed';
+      setErrorMsg(msg);
       setStatus('error');
     }
   }
