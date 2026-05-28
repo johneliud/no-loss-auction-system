@@ -193,7 +193,18 @@ impl NoLossAuction {
         emit(&env, "auction_cancelled", ());
     }
 
-    
+    /// Returns the current auction state.
+    pub fn get_auction(env: Env) -> AuctionState {
+        env.storage()
+            .instance()
+            .get(&DataKey::Auction)
+            .expect("not initialized")
+    }
+
+    /// Returns true if an auction has been initialized.
+    pub fn has_auction(env: Env) -> bool {
+        env.storage().instance().has(&DataKey::Auction)
+    }
 }
 
 mod test;
