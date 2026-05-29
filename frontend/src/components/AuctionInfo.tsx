@@ -70,7 +70,9 @@ export default function AuctionInfo({ auction, phase, walletAddress, onRefresh }
         <div>
           <div className="flex items-center gap-2 mb-2">{phaseBadge(phase)}</div>
           <h2 className="text-lg font-semibold text-sui-white">Auction Details</h2>
-          <p className="text-xs font-mono text-white/30 mt-0.5">{truncate(CONTRACT_ID)}</p>
+          <p className="text-xs font-mono text-white/30 mt-0.5">
+            {truncate(CONTRACT_ID)}
+          </p>
         </div>
         <button
           onClick={onRefresh}
@@ -118,7 +120,9 @@ export default function AuctionInfo({ auction, phase, walletAddress, onRefresh }
         </div>
 
         <div className="stat-row">
-          <span className="stat-label">{phase === 'active' ? 'Time Left' : 'Deadline'}</span>
+          <span className="stat-label">
+            {phase === 'active' ? 'Time Left' : 'Deadline'}
+          </span>
           <span className="stat-value">
             {phase === 'active' ? (
               <Countdown deadline={auction.deadline} />
