@@ -77,7 +77,8 @@ export default function AuctionActions({
       {phase === 'ended' && (
         <div>
           <p className="text-xs text-white/40 mb-3">
-            The auction deadline has passed. Finalize to send the winning bid to the seller.
+            The auction deadline has passed. Finalize to send the winning bid to the
+            seller.
           </p>
           <button
             onClick={handleFinalize}
