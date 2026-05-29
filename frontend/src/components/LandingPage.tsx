@@ -25,3 +25,22 @@ const STEPS = [
     body: "After the deadline, anyone can trigger finalization. The winning bid transfers to the seller. All other participants' funds were already returned.",
   },
 ];
+
+const PROPERTIES = [
+  {
+    label: 'Non-custodial',
+    detail: 'Funds are held by the contract, never by a third party.',
+  },
+  {
+    label: 'Instant refunds',
+    detail: 'Outbid? Your XLM returns in the same block.',
+  },
+  {
+    label: 'Open settlement',
+    detail: 'Anyone can finalize once the deadline passes.',
+  },
+  {
+    label: 'Cancel-safe',
+    detail: 'Sellers can cancel only before any bids are placed.',
+  },
+];
