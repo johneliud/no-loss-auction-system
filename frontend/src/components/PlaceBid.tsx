@@ -42,8 +42,7 @@ export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
   const isNative = auction.token === NATIVE_TOKEN;
   const isNotFunded = errorMsg.includes('not funded');
 
-  const isSeller =
-    walletAddress.toLowerCase() === auction.seller.toLowerCase();
+  const isSeller = walletAddress.toLowerCase() === auction.seller.toLowerCase();
 
   useEffect(() => {
     if (isSeller) return;
@@ -79,9 +78,7 @@ export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
         throw new Error(`Bid must be at least ${minDisplay} XLM`);
       }
       if (auction.highest_bid > 0n && stroops <= auction.highest_bid) {
-        throw new Error(
-          `Bid must exceed the current highest bid of ${floorDisplay} XLM`
-        );
+        throw new Error(`Bid must exceed the current highest bid of ${floorDisplay} XLM`);
       }
 
       await placeBid(walletAddress, stroops);
@@ -145,9 +142,7 @@ export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
               placeholder={`Min ${floorDisplay} XLM`}
               className="field-input pr-12"
               disabled={
-                status === 'submitting' ||
-                status === 'success' ||
-                status === 'funding'
+                status === 'submitting' || status === 'success' || status === 'funding'
               }
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/30 font-mono pointer-events-none">
@@ -233,7 +228,9 @@ export default function PlaceBid({ auction, walletAddress, onSuccess }: Props) {
         )}
 
         {status === 'success' && (
-          <p className="text-xs text-sui-teal">Bid confirmed. Refreshing auction state...</p>
+          <p className="text-xs text-sui-teal">
+            Bid confirmed. Refreshing auction state...
+          </p>
         )}
       </form>
     </div>
