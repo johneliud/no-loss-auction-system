@@ -44,3 +44,28 @@ const PROPERTIES = [
     detail: 'Sellers can cancel only before any bids are placed.',
   },
 ];
+
+export default function LandingPage({ onConnected }: Props) {
+  const [status, setStatus] = useState<ConnectStatus>('idle');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  async function connect() {
+    setStatus('connecting');
+    setErrorMsg('');
+    try {
+      const installed = await freighterInstalled();
+      if (!installed) {
+        throw new Error(
+          'Freighter not detected. Install the browser extension and refresh.'
+        );
+      }
+      const address = await getWalletAddress();
+      onConnected(address);
+    } catch (e) {
+      setErrorMsg(e instanceof Error ? e.message : 'Connection failed');
+      setStatus('error');
+    }
+  }
+
+  const contractShort = `${CONTRACT_ID.slice(0, 6)}...${CONTRACT_ID.slice(-6)}`;
+}
