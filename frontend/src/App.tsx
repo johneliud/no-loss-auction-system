@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import WalletConnect from './components/WalletConnect';
+import LandingPage from './components/LandingPage';
 import AuctionInfo from './components/AuctionInfo';
 import PlaceBid from './components/PlaceBid';
 import CreateAuction from './components/CreateAuction';
@@ -56,7 +56,7 @@ export default function App() {
   if (appState === 'no_wallet' || !walletAddress) {
     return (
       <>
-        <WalletConnect onConnected={onWalletConnected} />
+        <LandingPage onConnected={onWalletConnected} />
         {loadError && (
           <div className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-sui-red text-sui-white text-xs px-4 py-2 max-w-sm text-center">
             {loadError}
@@ -85,7 +85,7 @@ export default function App() {
     <div className="min-h-screen bg-sui-black">
       {/* Top bar */}
       <header className="bg-sui-off-black border-b border-white/10 sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+        <div className="max-w-screen-2xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 bg-sui-gold inline-block" />
@@ -119,7 +119,7 @@ export default function App() {
       </header>
 
       {/* Main content */}
-      <main className="max-w-2xl mx-auto px-4 py-8 space-y-4">
+      <main className="max-w-screen-2xl mx-auto px-4 py-8 space-y-4">
         {auction && (
           <>
             <AuctionInfo
@@ -149,7 +149,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="border-t border-white/10 bg-sui-off-black mt-16">
-        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="max-w-screen-2xl mx-auto px-4 py-4 flex items-center justify-between">
           <span className="text-xs text-white/30">
             Contract:{' '}
             <a
