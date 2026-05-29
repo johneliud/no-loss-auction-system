@@ -4,6 +4,8 @@ A decentralized no-loss auction built on [Stellar](https://stellar.org) using [S
 
 **No-loss** means every outbid participant is refunded instantly and automatically. Nobody loses their tokens except the winner, whose bid goes to the seller.
 
+**Live demo:** [https://no-loss-auction-system.vercel.app](https://no-loss-auction-system.vercel.app)
+
 ---
 
 ## Contract
